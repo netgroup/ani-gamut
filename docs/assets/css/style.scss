@@ -1,0 +1,99 @@
+---
+---
+
+@import "jekyll-theme-slate";
+
+/* =========================================================
+   ANI-Gamut custom styles, layered on pages-themes/slate.
+   Slate provides the dark header (title + description) and
+   the light content column; these rules style the custom
+   blocks injected in index.md.
+   ========================================================= */
+
+.lead {
+  font-size: 1.15rem;
+  color: #1b1f24;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin: 1rem 0 .3rem;
+}
+.pill {
+  border-radius: 999px;
+  padding: .25rem .85rem;
+  font-weight: 700;
+  font-size: .95rem;
+  border: 1px solid;
+}
+.pill.good { background: #d7ecd9; color: #11622f; border-color: #9cc8a6; }
+.pill.conc { background: #f0f1f3; color: #6b7280; border-color: #d4d8de; }
+
+.legend {
+  font-size: .85rem;
+  color: #7a828b;
+  margin: .2rem 0 1.1rem;
+}
+
+.spectrum {
+  border: 1px solid #e3e8ee;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1rem 0 1.6rem;
+}
+.spectrum .row {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  border-top: 1px solid #e3e8ee;
+}
+.spectrum .row:first-child { border-top: none; }
+.spectrum .lvl {
+  font-weight: 800;
+  padding: .55rem .8rem;
+  background: #f6f8fa;
+  border-right: 1px solid #e3e8ee;
+  display: flex;
+  align-items: center;
+}
+.spectrum .lvl.g { color: #11622f; }
+.spectrum .lvl.c { color: #6b7280; }
+.spectrum .desc { padding: .55rem .85rem; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: .6rem 0 1.2rem;
+}
+.card {
+  background: #f6f8fa;
+  border: 1px solid #e3e8ee;
+  border-radius: 8px;
+  padding: .9rem 1.1rem;
+}
+.card h3 {
+  margin: .1rem 0 .35rem;
+  font-size: 1.05rem;
+  color: #0a7d4d;
+}
+
+figure { margin: 1.5rem 0; text-align: center; }
+figure img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #e3e8ee;
+  border-radius: 8px;
+  background: #fff;
+}
+figcaption {
+  font-size: .85rem;
+  color: #7a828b;
+  margin-top: .5rem;
+}
+
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .spectrum .row { grid-template-columns: 72px 1fr; }
+}
