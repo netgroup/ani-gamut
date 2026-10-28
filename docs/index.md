@@ -5,6 +5,8 @@
 
 The same change can be presented to an agent as a raw device shell, as a typed declarative service request, or as an edit to a reconciled source of truth. These are very different contracts between the agent and the network. **ANI-Gamut** makes that level the variable we vary, holding the task, the model, and the observation interface fixed, and reads off reliability, safety, recovery, and cost.
 
+<p class="quicklinks"><a href="#paper-and-resources">Paper (CNSM 2026)</a> &middot; <a href="https://arxiv.org/abs/2609.22723">Extended version (arXiv)</a> &middot; <a href="{{ '/preregistration.html' | relative_url }}">Analysis plan</a> &middot; <a href="https://netgroup.github.io/ani-gamut-talk-cnsm26/">Talk</a> &middot; <a href="#code">Code</a></p>
+
 ## The interface-abstraction spectrum
 
 <div class="pills">
@@ -50,4 +52,29 @@ The same change can be presented to an agent as a raw device shell, as a typed d
 
 Safe configuration is a **zero-tolerance** property: an agent that completes its task but silently breaks an unrelated, already-deployed service has caused an outage, not a success. The headline metric is therefore not mean task completion but the **rate of damage-free runs**, estimated with tail-aware statistics as the substrate is stressed by rising state density and injected faults. The hypothesis under test is that raising the interface level shrinks the agent's blast radius, a structural safety gain that ad-hoc guardrails approximate but do not match.
 
-<!-- TODO before publishing: add the paper citation + BibTeX, the code repository link, a contact e-mail, and the Nokia collaboration once confirmed. -->
+## Paper and resources
+
+- **Paper.** L. Bracciale, P. Loreti, A. Mayer, S. Salsano, W. Henderickx, "ANI-Gamut: Benchmarking Agent Reliability across the Gamut of Agent&ndash;Network Interface Abstractions," *International Conference on Network and Service Management (CNSM 2026)*, Alcal&aacute; de Henares, Spain, October 2026.
+- **Extended version** (full methodology, system architecture and appendices): [arXiv:2609.22723](https://arxiv.org/abs/2609.22723).
+- **Hypotheses and analysis plan**: [as stated in Section VI of the paper]({{ '/preregistration.html' | relative_url }}), with the part of the plan executed in the pilot.
+- **Talk**: CNSM 2026, Full Paper Session 2 "AI for Networks", 27 October 2026 &mdash; [slides](https://netgroup.github.io/ani-gamut-talk-cnsm26/).
+
+## Code
+
+The playground (composition manifest, scenario generator, harness) is released as open source in the [netgroup/ani-gamut](https://github.com/netgroup/ani-gamut) repository.
+
+## How to cite
+
+```bibtex
+@inproceedings{bracciale2026anigamut,
+  author    = {Bracciale, Lorenzo and Loreti, Pierpaolo and Mayer, Andrea and Salsano, Stefano and Henderickx, Wim},
+  title     = {{ANI-Gamut}: Benchmarking Agent Reliability across the Gamut of Agent--Network Interface Abstractions},
+  booktitle = {International Conference on Network and Service Management (CNSM)},
+  address   = {Alcal\'a de Henares, Spain},
+  year      = {2026}
+}
+```
+
+## Acknowledgment
+
+This work has received funding from the Italian MUR PRIN NEWTON project.
