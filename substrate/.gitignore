@@ -1,0 +1,15 @@
+clab-sr-4hs-2lf-2sp-demo/
+scripts/lib/agent_ai/__pycache__/
+scripts/lib/.venv/
+
+# Python caches (anywhere)
+__pycache__/
+*.pyc
+
+# Containerlab runtime + local env
+clab-srv6-inest-demo-new/
+clab-*/
+.env
+
+# Generated per-worker topologies (deploy/gen-worker-topos.py)
+topo-w*.yaml

@@ -1,0 +1,5 @@
+datapizza
+google-generativeai
+networkx
+pika
+pydantic

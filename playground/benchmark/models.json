@@ -1,0 +1,5 @@
+[
+  {"provider": "google", "model": "gemini-2.5-flash" },
+  {"provider": "deepseek", "model": "deepseek-v4-pro" },
+  {"provider": "openai", "model": "gpt-5.4-mini" }
+]

@@ -1,0 +1,87 @@
+# SRv6 Data Center Network Simulation -- ANI-Gamut extended fabric
+# 6 PE / 3 IGW / 2 EGW / 12 hosts (+ master + rabbit). Leaf-spine:
+#   hosts -> PE (2 per PE); each PE dual-homed to 2 IGWs; IGW full mesh;
+#   each IGW to both EGWs. Router ids: pe1-6, igw7-9, egw10-11 (locators fcf0:{id}::/32).
+# The static route plane scripts/configs/<router>.conf is generated from this file by
+#   scripts/gen_underlay_routes.py (shortest path). Regenerate after any topology change.
+#
+# Copyright (C) 2026 Andrea Mayer -- GPL v3 <https://www.gnu.org/licenses/gpl-3.0.html>
+
+name: srv6-inest-demo-new
+topology:
+  defaults:
+    kind: linux
+    image: ubuntu-node:latest
+    binds:
+      - ./scripts/:/opt/clab
+    exec:
+        - /opt/clab/lib/startup.sh
+  nodes:
+    master:
+        binds:
+          - ./topo.yaml:/opt/conf/topo.yaml:ro
+        exec:
+          - /usr/bin/bash
+        env-files:
+          - .env
+    rabbit:
+        image: rabbitmq:latest
+        exec:
+            - /usr/bin/bash
+    hs1:  {}
+    hs2:  {}
+    hs3:  {}
+    hs4:  {}
+    hs5:  {}
+    hs6:  {}
+    hs7:  {}
+    hs8:  {}
+    hs9:  {}
+    hs10: {}
+    hs11: {}
+    hs12: {}
+    pe1:  {}
+    pe2:  {}
+    pe3:  {}
+    pe4:  {}
+    pe5:  {}
+    pe6:  {}
+    igw7: {}
+    igw8: {}
+    igw9: {}
+    egw10: {}
+    egw11: {}
+  links:
+    - endpoints: ["hs1:hs1-pe1",   "pe1:pe1-hs1"]
+    - endpoints: ["hs2:hs2-pe1",   "pe1:pe1-hs2"]
+    - endpoints: ["hs3:hs3-pe2",   "pe2:pe2-hs3"]
+    - endpoints: ["hs4:hs4-pe2",   "pe2:pe2-hs4"]
+    - endpoints: ["hs5:hs5-pe3",   "pe3:pe3-hs5"]
+    - endpoints: ["hs6:hs6-pe3",   "pe3:pe3-hs6"]
+    - endpoints: ["hs7:hs7-pe4",   "pe4:pe4-hs7"]
+    - endpoints: ["hs8:hs8-pe4",   "pe4:pe4-hs8"]
+    - endpoints: ["hs9:hs9-pe5",   "pe5:pe5-hs9"]
+    - endpoints: ["hs10:hs10-pe5", "pe5:pe5-hs10"]
+    - endpoints: ["hs11:hs11-pe6", "pe6:pe6-hs11"]
+    - endpoints: ["hs12:hs12-pe6", "pe6:pe6-hs12"]
+    - endpoints: ["pe1:pe1-igw7", "igw7:igw7-pe1"]
+    - endpoints: ["pe1:pe1-igw8", "igw8:igw8-pe1"]
+    - endpoints: ["pe2:pe2-igw7", "igw7:igw7-pe2"]
+    - endpoints: ["pe2:pe2-igw8", "igw8:igw8-pe2"]
+    - endpoints: ["pe3:pe3-igw7", "igw7:igw7-pe3"]
+    - endpoints: ["pe3:pe3-igw9", "igw9:igw9-pe3"]
+    - endpoints: ["pe4:pe4-igw7", "igw7:igw7-pe4"]
+    - endpoints: ["pe4:pe4-igw9", "igw9:igw9-pe4"]
+    - endpoints: ["pe5:pe5-igw8", "igw8:igw8-pe5"]
+    - endpoints: ["pe5:pe5-igw9", "igw9:igw9-pe5"]
+    - endpoints: ["pe6:pe6-igw8", "igw8:igw8-pe6"]
+    - endpoints: ["pe6:pe6-igw9", "igw9:igw9-pe6"]
+    - endpoints: ["igw7:igw7-igw8", "igw8:igw8-igw7"]
+    - endpoints: ["igw7:igw7-igw9", "igw9:igw9-igw7"]
+    - endpoints: ["igw8:igw8-igw9", "igw9:igw9-igw8"]
+    - endpoints: ["igw7:igw7-egw10", "egw10:egw10-igw7"]
+    - endpoints: ["igw7:igw7-egw11", "egw11:egw11-igw7"]
+    - endpoints: ["igw8:igw8-egw10", "egw10:egw10-igw8"]
+    - endpoints: ["igw8:igw8-egw11", "egw11:egw11-igw8"]
+    - endpoints: ["igw9:igw9-egw10", "egw10:egw10-igw9"]
+    - endpoints: ["igw9:igw9-egw11", "egw11:egw11-igw9"]

@@ -1,0 +1,80 @@
+{
+  "name": "SR Linux Basic L3 Link",
+  "lab_file": "labs/srl02.yml",
+  "domain": "routing",
+  "difficulty": "easy",
+  "description": "Bring up a basic routed point-to-point IPv4 link between srl1 and srl2 over ethernet-1/1 so the two routers can ping each other.",
+  "intent": {
+    "goal": "Make srl1 and srl2 reachable over their direct Layer 3 link without disturbing management connectivity.",
+    "requirements": [
+      "Use ethernet-1/1 as the point-to-point link on both routers and make sure it is enabled.",
+      "Create the routed subinterface 0 on both sides with IPv4 enabled.",
+      "Use 10.0.12.1/30 on srl1 and 10.0.12.2/30 on srl2.",
+      "After the change, srl1 must ping 10.0.12.2 and srl2 must ping 10.0.12.1."
+    ]
+  },
+  "baseline_invariants": [
+    {
+      "name": "SRL1 management interface is still up",
+      "device": "srl1",
+      "command": "show interface brief",
+      "expected_output": "mgmt0"
+    },
+    {
+      "name": "SRL2 management interface is still up",
+      "device": "srl2",
+      "command": "show interface brief",
+      "expected_output": "mgmt0"
+    },
+    {
+      "name": "SRL1 management route is still present",
+      "device": "srl1",
+      "command": "show network-instance default route-table ipv4-unicast",
+      "expected_output": "0.0.0.0/0"
+    },
+    {
+      "name": "SRL2 management route is still present",
+      "device": "srl2",
+      "command": "show network-instance default route-table ipv4-unicast",
+      "expected_output": "0.0.0.0/0"
+    }
+  ],
+  "testcases": [
+    {
+      "name": "SRL1 can ping SRL2",
+      "device": "srl1",
+      "command": "ping -c 3 10.0.12.2 network-instance default",
+      "expected_output": "3 packets transmitted, 3 received"
+    },
+    {
+      "name": "SRL2 can ping SRL1",
+      "device": "srl2",
+      "command": "ping -c 3 10.0.12.1 network-instance default",
+      "expected_output": "3 packets transmitted, 3 received"
+    },
+    {
+      "name": "SRL1 interface is enabled",
+      "device": "srl1",
+      "command": "show interface brief",
+      "expected_output": "ethernet-1/1        | enable"
+    },
+    {
+      "name": "SRL2 interface is enabled",
+      "device": "srl2",
+      "command": "show interface brief",
+      "expected_output": "ethernet-1/1        | enable"
+    },
+    {
+      "name": "SRL1 has correct IP",
+      "device": "srl1",
+      "command": "info from running",
+      "expected_output": "address 10.0.12.1/30"
+    },
+    {
+      "name": "SRL2 has correct IP",
+      "device": "srl2",
+      "command": "info from running",
+      "expected_output": "address 10.0.12.2/30"
+    }
+  ]
+}

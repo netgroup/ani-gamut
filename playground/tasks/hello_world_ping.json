@@ -1,0 +1,125 @@
+{
+  "task_name": "HelloWorld Ping",
+  "lab_file": "labs/hello-world.yml",
+  "domain": "routing",
+  "difficulty": "easy",
+  "intents": [
+    "Make the two PCs reachable through the router in this minimal IPv4 lab.",
+    "PC1 uses 10.0.1.2 and should use the router as the gateway for the PC2 side.",
+    "PC2 uses 10.0.2.2 and should use the router as the gateway for the PC1 side.",
+    "Give the router one address in each LAN, 10.0.1.1/24 toward PC1 and 10.0.2.1/24 toward PC2.",
+    "Enable IPv4 forwarding on the router so the two PCs can ping each other."
+  ],
+  "topology": {
+    "nodes": [
+      "pc1",
+      "router",
+      "pc2"
+    ],
+    "links": [
+      "pc1:eth1 <-> router:eth1",
+      "pc2:eth1 <-> router:eth2"
+    ]
+  },
+  "startup_configs": {
+    "pc1": [
+      "ip addr add 10.0.1.2/24 dev eth1",
+      "ip route add default via 10.0.1.1"
+    ],
+    "router": [],
+    "pc2": [
+      "ip addr add 10.0.2.2/24 dev eth1",
+      "ip route add default via 10.0.2.1"
+    ]
+  },
+  "ground_truth_configs": {
+    "router": [
+      "ip addr add 10.0.1.1/24 dev eth1",
+      "ip addr add 10.0.2.1/24 dev eth2",
+      "echo 1 > /proc/sys/net/ipv4/ip_forward"
+    ]
+  },
+  "ground_truth_reasoning": "The router needs an IP on each interface to act as the default gateway for each subnet. eth1 faces PC1 on 10.0.1.0/24, so it gets 10.0.1.1/24. eth2 faces PC2 on 10.0.2.0/24, so it gets 10.0.2.1/24. Finally, IP forwarding must be enabled so the kernel routes packets between the two subnets.",
+  "baseline_invariants": [
+    {
+      "name": "PC1 still has management default route",
+      "device": "pc1",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    },
+    {
+      "name": "PC2 still has management default route",
+      "device": "pc2",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    },
+    {
+    "name": "PC1 still has management IPv4 on eth0",
+    "device": "pc1",
+    "command": "ip addr show eth0",
+    "expected_output": "inet 172.20.20."
+    },
+    {
+      "name": "PC2 still has management IPv4 on eth0",
+      "device": "pc2",
+      "command": "ip addr show eth0",
+      "expected_output": "inet 172.20.20."
+    },
+    {
+      "name": "Router management interface is still up",
+      "device": "router",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    },
+    {
+      "name": "Router still has management default route",
+      "device": "router",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    },
+    {
+      "name": "PC1 management interface is still up",
+      "device": "pc1",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    },
+    {
+      "name": "PC2 management interface is still up",
+      "device": "pc2",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    }
+  ],
+  "testcases": [
+    {
+      "name": "PC1 can ping PC2",
+      "device": "pc1",
+      "command": "ping -c 3 -W 2 10.0.2.2",
+      "expected_output": "3 packets transmitted, 3 packets received"
+    },
+    {
+      "name": "PC2 can ping PC1",
+      "device": "pc2",
+      "command": "ping -c 3 -W 2 10.0.1.2",
+      "expected_output": "3 packets transmitted, 3 packets received"
+    },
+    {
+      "name": "Router eth1 has correct IP",
+      "device": "router",
+      "command": "ip addr show eth1",
+      "expected_output": "10.0.1.1/24"
+    },
+    {
+      "name": "Router eth2 has correct IP",
+      "device": "router",
+      "command": "ip addr show eth2",
+      "expected_output": "10.0.2.1/24"
+    },
+    {
+      "name": "IP forwarding is enabled",
+      "device": "router",
+      "command": "cat /proc/sys/net/ipv4/ip_forward",
+      "expected_output": "1"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+# Lab descriptor for the ANI-Gamut SRv6 substrate (the live containerlab lab is deployed
+# from the 26-agai-srv6 repo: `sudo make deploy`, name srv6-inest-demo-new). NetAiBench
+# does NOT deploy this lab; it only reads node names/kinds/links here and acts on the
+# already-running containers clab-srv6-inest-demo-new-<node> via docker exec.
+name: srv6-inest-demo-new
+
+topology:
+  nodes:
+    hs1:  {kind: linux, image: ubuntu-node:latest}
+    hs2:  {kind: linux, image: ubuntu-node:latest}
+    hs3:  {kind: linux, image: ubuntu-node:latest}
+    hs4:  {kind: linux, image: ubuntu-node:latest}
+    hs5:  {kind: linux, image: ubuntu-node:latest}
+    hs6:  {kind: linux, image: ubuntu-node:latest}
+    hs7:  {kind: linux, image: ubuntu-node:latest}
+    hs8:  {kind: linux, image: ubuntu-node:latest}
+    hs9:  {kind: linux, image: ubuntu-node:latest}
+    hs10: {kind: linux, image: ubuntu-node:latest}
+    hs11: {kind: linux, image: ubuntu-node:latest}
+    hs12: {kind: linux, image: ubuntu-node:latest}
+    pe1:  {kind: linux, image: ubuntu-node:latest}
+    pe2:  {kind: linux, image: ubuntu-node:latest}
+    pe3:  {kind: linux, image: ubuntu-node:latest}
+    pe4:  {kind: linux, image: ubuntu-node:latest}
+    pe5:  {kind: linux, image: ubuntu-node:latest}
+    pe6:  {kind: linux, image: ubuntu-node:latest}
+    igw7: {kind: linux, image: ubuntu-node:latest}
+    igw8: {kind: linux, image: ubuntu-node:latest}
+    igw9: {kind: linux, image: ubuntu-node:latest}
+    egw10: {kind: linux, image: ubuntu-node:latest}
+    egw11: {kind: linux, image: ubuntu-node:latest}
+
+  links:
+    - endpoints: ["hs1:hs1-pe1",   "pe1:pe1-hs1"]
+    - endpoints: ["hs2:hs2-pe1",   "pe1:pe1-hs2"]
+    - endpoints: ["hs3:hs3-pe2",   "pe2:pe2-hs3"]
+    - endpoints: ["hs4:hs4-pe2",   "pe2:pe2-hs4"]
+    - endpoints: ["hs5:hs5-pe3",   "pe3:pe3-hs5"]
+    - endpoints: ["hs6:hs6-pe3",   "pe3:pe3-hs6"]
+    - endpoints: ["hs7:hs7-pe4",   "pe4:pe4-hs7"]
+    - endpoints: ["hs8:hs8-pe4",   "pe4:pe4-hs8"]
+    - endpoints: ["hs9:hs9-pe5",   "pe5:pe5-hs9"]
+    - endpoints: ["hs10:hs10-pe5", "pe5:pe5-hs10"]
+    - endpoints: ["hs11:hs11-pe6", "pe6:pe6-hs11"]
+    - endpoints: ["hs12:hs12-pe6", "pe6:pe6-hs12"]
+    - endpoints: ["pe1:pe1-igw7", "igw7:igw7-pe1"]
+    - endpoints: ["pe1:pe1-igw8", "igw8:igw8-pe1"]
+    - endpoints: ["pe2:pe2-igw7", "igw7:igw7-pe2"]
+    - endpoints: ["pe2:pe2-igw8", "igw8:igw8-pe2"]
+    - endpoints: ["pe3:pe3-igw7", "igw7:igw7-pe3"]
+    - endpoints: ["pe3:pe3-igw9", "igw9:igw9-pe3"]
+    - endpoints: ["pe4:pe4-igw7", "igw7:igw7-pe4"]
+    - endpoints: ["pe4:pe4-igw9", "igw9:igw9-pe4"]
+    - endpoints: ["pe5:pe5-igw8", "igw8:igw8-pe5"]
+    - endpoints: ["pe5:pe5-igw9", "igw9:igw9-pe5"]
+    - endpoints: ["pe6:pe6-igw8", "igw8:igw8-pe6"]
+    - endpoints: ["pe6:pe6-igw9", "igw9:igw9-pe6"]
+    - endpoints: ["igw7:igw7-igw8", "igw8:igw8-igw7"]
+    - endpoints: ["igw7:igw7-igw9", "igw9:igw9-igw7"]
+    - endpoints: ["igw8:igw8-igw9", "igw9:igw9-igw8"]
+    - endpoints: ["igw7:igw7-egw10", "egw10:egw10-igw7"]
+    - endpoints: ["igw7:igw7-egw11", "egw11:egw11-igw7"]
+    - endpoints: ["igw8:igw8-egw10", "egw10:egw10-igw8"]
+    - endpoints: ["igw8:igw8-egw11", "egw11:egw11-igw8"]
+    - endpoints: ["igw9:igw9-egw10", "egw10:egw10-igw9"]
+    - endpoints: ["igw9:igw9-egw11", "egw11:egw11-igw9"]

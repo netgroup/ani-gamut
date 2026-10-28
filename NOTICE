@@ -1,0 +1,7 @@
+ANI-Gamut playground
+Copyright 2026 Stefano Salsano
+
+This product includes a derived version of NetAiBench (playground/agent, ani, benchmark, labs, tasks),
+Copyright 2026 Lorenzo Proia, Lorenzo Bracciale, Stefano Salsano.
+
+The SRv6 substrate in substrate/ is licensed separately under the GNU GPL v3.0 (see substrate/LICENSE.txt).

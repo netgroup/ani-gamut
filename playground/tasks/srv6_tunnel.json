@@ -1,0 +1,41 @@
+{
+  "task_name": "SRv6 L3VPN tunnel hs1 <-> hs12",
+  "lab_file": "labs/srv6-testbed.yml",
+  "domain": "srv6",
+  "difficulty": "hard",
+  "intents": [
+    "Establish bidirectional IPv4 reachability between two tenant hosts of an SRv6 L3VPN: hs1 (10.0.1.1/32, attached to PE router pe1) and hs12 (10.0.12.1/32, attached to PE router pe6). They currently cannot reach each other; make ping work in both directions.",
+    "The SRv6 micro-SID (uSID, F3216) underlay is already up and must NOT be changed: each PE router owns the locator 5f00:0:<router-id>::/48 and a uN behaviour, and PE-to-PE underlay reachability between the locators already works. Router ids are the digits in the node name (pe1 -> 1, pe6 -> 6).",
+    "Each tenant host is attached to its PE inside a per-tenant VRF whose routing table id is 100 + host-id: hs1 -> table 101 (vrf101) on pe1; hs12 -> table 112 (vrf112) on pe6.",
+    "To deliver tenant traffic to a remote host you must (a) on the INGRESS PE, add an IPv4 route inside the tenant VRF table that SRv6-encapsulates packets toward the destination host's End.DT4 SID; and (b) on the EGRESS PE, install that End.DT4 SID so it decapsulates into the destination host's VRF.",
+    "The End.DT4 SID convention is 5f00:0:<egress-router-id>:f4<host-id>:: where <host-id> is the host number as TWO hex digits. So the SID for hs12 (host 12 = 0x0c on pe6) is 5f00:0:6:f40c:: and the SID for hs1 (host 1 = 0x01 on pe1) is 5f00:0:1:f401::.",
+    "On Linux the ingress encap is `ip route add table <tenant-table> <dst-host>/32 encap seg6 mode encap segs <End.DT4-SID> dev <egress-interface>` and the egress decap is `ip -6 route add <End.DT4-SID>/128 encap seg6local action End.DT4 vrftable <tenant-table> dev vrf<tenant-table>`.",
+    "You can discover the correct egress interface on a PE by inspecting the underlay route toward the remote locator, e.g. `ip -6 route show 5f00:0:6::/48` on pe1 shows the outgoing interface toward pe6.",
+    "Provision the service in BOTH directions (hs1->hs12 and hs12->hs1). Do not modify management interfaces (eth0), the underlay route plane, or any other tenant's state."
+  ],
+  "ground_truth_configs": {
+    "pe1": [
+      "ip route add table 101 10.0.12.1/32 encap seg6 mode encap segs 5f00:0:6:f40c:: dev pe1-igw8",
+      "ip -6 route add 5f00:0:1:f401::/128 encap seg6local action End.DT4 vrftable 101 dev vrf101"
+    ],
+    "pe6": [
+      "ip -6 route add 5f00:0:6:f40c::/128 encap seg6local action End.DT4 vrftable 112 dev vrf112",
+      "ip route add table 112 10.0.1.1/32 encap seg6 mode encap segs 5f00:0:1:f401:: dev pe6-igw8"
+    ]
+  },
+  "ground_truth_reasoning": "The underlay (uSID locators 5f00:0:<id>::/48 with uN, plus the per-PE route plane) already gives PE-to-PE reachability. The missing piece is the tenant L3VPN overlay for the hs1<->hs12 pair. For the hs1->hs12 direction, the ingress PE pe1 must encapsulate IPv4 packets for 10.0.12.1 (looked up in tenant table 101) into SRv6 toward hs12's End.DT4 SID 5f00:0:6:f40c::, and the egress PE pe6 must install that End.DT4 SID to decapsulate into vrf112 (table 112). The reverse direction mirrors this with hs1's SID 5f00:0:1:f401:: encapsulated by pe6 in table 112 and decapsulated by pe1 into vrf101. The egress interface is the PE uplink toward the remote locator, discoverable from `ip -6 route show 5f00:0:<remote-id>::/48`. Management interfaces and the underlay must stay untouched.",
+  "baseline_invariants": [
+    {"name": "hs1 management interface still up", "device": "hs1", "command": "ip link show eth0", "expected_output": "state UP"},
+    {"name": "hs12 management interface still up", "device": "hs12", "command": "ip link show eth0", "expected_output": "state UP"},
+    {"name": "pe1 management interface still up", "device": "pe1", "command": "ip link show eth0", "expected_output": "state UP"},
+    {"name": "pe6 management interface still up", "device": "pe6", "command": "ip link show eth0", "expected_output": "state UP"},
+    {"name": "pe1 uN locator still installed", "device": "pe1", "command": "ip -6 route show 5f00:0:1::/48", "expected_output": "seg6local"},
+    {"name": "pe6 uN locator still installed", "device": "pe6", "command": "ip -6 route show 5f00:0:6::/48", "expected_output": "seg6local"}
+  ],
+  "testcases": [
+    {"name": "hs1 can ping hs12", "device": "hs1", "command": "ping -c 3 -W 2 10.0.12.1", "expected_output": "0% packet loss"},
+    {"name": "hs12 can ping hs1", "device": "hs12", "command": "ping -c 3 -W 2 10.0.1.1", "expected_output": "0% packet loss"},
+    {"name": "pe1 installed SRv6 encap for hs12 in tenant table 101", "device": "pe1", "command": "ip route show table 101", "expected_output": "encap seg6"},
+    {"name": "pe6 installed End.DT4 SID for hs12", "device": "pe6", "command": "ip -6 route show 5f00:0:6:f40c::/128", "expected_output": "End.DT4"}
+  ]
+}

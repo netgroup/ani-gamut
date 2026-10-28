@@ -1,0 +1,161 @@
+{
+  "task_name": "FRR Basic Connectivity",
+  "lab_file": "labs/frr-basic.yml",
+  "domain": "routing",
+  "difficulty": "easy",
+  "intents": [
+    "Build basic end-to-end IPv4 reachability across the pc1-r1-r2-pc2 topology.",
+    "pc1 belongs to 10.0.1.0/24 and pc2 belongs to 10.0.2.0/24; they must be able to ping each other through r1 and r2.",
+    "Use 10.0.12.0/24 as the transit network between r1 and r2.",
+    "Use r1 as pc1's gateway at 10.0.1.1/24 and r2 as pc2's gateway at 10.0.2.1/24.",
+    "Make sure both routers can forward IPv4 traffic and know how to reach the remote LAN.",
+    "Keep management connectivity unchanged while applying the addressing and routing plan."
+  ],
+  "ground_truth_configs": {
+    "r1": [
+      "ip addr add 10.0.1.1/24 dev eth1",
+      "ip addr add 10.0.12.1/24 dev eth2",
+      "ip route add 10.0.2.0/24 via 10.0.12.2",
+      "echo 1 > /proc/sys/net/ipv4/ip_forward"
+    ],
+    "r2": [
+      "ip addr add 10.0.12.2/24 dev eth1",
+      "ip addr add 10.0.2.1/24 dev eth2",
+      "ip route add 10.0.1.0/24 via 10.0.12.1",
+      "echo 1 > /proc/sys/net/ipv4/ip_forward"
+    ],
+    "pc1": [
+      "ip addr add 10.0.1.2/24 dev eth1",
+      "ip route add 10.0.2.0/24 via 10.0.1.1"
+    ],
+    "pc2": [
+      "ip addr add 10.0.2.2/24 dev eth1",
+      "ip route add 10.0.1.0/24 via 10.0.2.1"
+    ]
+  },
+  "ground_truth_reasoning": "First configure the endpoint and router interface IPv4 addresses according to the required addressing plan: pc1 on 10.0.1.0/24, r1 with interfaces on 10.0.1.0/24 and 10.0.12.0/24, r2 with interfaces on 10.0.12.0/24 and 10.0.2.0/24, and pc2 on 10.0.2.0/24. The Docker management default route on eth0 must remain intact, so the end hosts receive specific routes for the remote lab subnet through their directly connected router. After addressing is in place, enable IPv4 forwarding on both routers and install static routes on r1 toward 10.0.2.0/24 via r2 and on r2 toward 10.0.1.0/24 via r1.",
+  "baseline_invariants": [
+          {
+      "name": "PC1 management interface is still up",
+      "device": "pc1",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    },
+    {
+      "name": "PC2 management interface is still up",
+      "device": "pc2",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    },
+    {
+      "name": "PC1 still has management default route",
+      "device": "pc1",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    },
+    {
+      "name": "PC2 still has management default route",
+      "device": "pc2",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    },
+    {
+      "name": "R1 management interface is still up",
+      "device": "r1",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    },
+    {
+      "name": "R2 management interface is still up",
+      "device": "r2",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    },
+    {
+      "name": "R1 still has management default route",
+      "device": "r1",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    },
+    {
+      "name": "R2 still has management default route",
+      "device": "r2",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    },
+    {
+      "name": "R1 FRR CLI is still reachable",
+      "device": "r1",
+      "command": "vtysh -c 'show version'",
+      "expected_output": "FRRouting"
+    },
+    {
+      "name": "R2 FRR CLI is still reachable",
+      "device": "r2",
+      "command": "vtysh -c 'show version'",
+      "expected_output": "FRRouting"
+    }
+  ],
+  "testcases": [
+    {
+      "name": "PC1 can ping PC2",
+      "device": "pc1",
+      "command": "ping -c 3 -W 2 10.0.2.2",
+      "expected_output": "3 packets transmitted, 3 packets received"
+    },
+    {
+      "name": "PC2 can ping PC1",
+      "device": "pc2",
+      "command": "ping -c 3 -W 2 10.0.1.2",
+      "expected_output": "3 packets transmitted, 3 packets received"
+    },
+    {
+      "name": "R1 eth1 has correct IP",
+      "device": "r1",
+      "command": "ip addr show eth1",
+      "expected_output": "10.0.1.1/24"
+    },
+    {
+      "name": "R1 eth2 has correct IP",
+      "device": "r1",
+      "command": "ip addr show eth2",
+      "expected_output": "10.0.12.1/24"
+    },
+    {
+      "name": "R2 eth1 has correct IP",
+      "device": "r2",
+      "command": "ip addr show eth1",
+      "expected_output": "10.0.12.2/24"
+    },
+    {
+      "name": "R2 eth2 has correct IP",
+      "device": "r2",
+      "command": "ip addr show eth2",
+      "expected_output": "10.0.2.1/24"
+    },
+    {
+      "name": "PC1 has correct IP",
+      "device": "pc1",
+      "command": "ip addr show eth1",
+      "expected_output": "10.0.1.2/24"
+    },
+    {
+      "name": "PC2 has correct IP",
+      "device": "pc2",
+      "command": "ip addr show eth1",
+      "expected_output": "10.0.2.2/24"
+    },
+    {
+      "name": "R1 has route to PC2 subnet",
+      "device": "r1",
+      "command": "ip route show",
+      "expected_output": "10.0.2.0/24 via 10.0.12.2"
+    },
+    {
+      "name": "R2 has route to PC1 subnet",
+      "device": "r2",
+      "command": "ip route show",
+      "expected_output": "10.0.1.0/24 via 10.0.12.1"
+    }
+  ]
+}

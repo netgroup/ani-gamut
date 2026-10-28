@@ -1,0 +1,47 @@
+# IDE
+.vscode/
+
+# Virtualenv / env
+.venv/
+venv/
+env/
+ENV/
+
+# Secrets / environment variables
+.env
+.env.*
+!.env.example
+
+# Python cache/build
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project runtime output (generated, not versioned)
+results/
+tasks/target*.json
+logs/w*/
+
+# Backup folder (uncomment if you don't want to version it)
+backups/
+
+# "Zone.Identifier" files (Windows ADS copied onto Linux)
+*:Zone.Identifier
+
+# Labs: version the top-level .yml files and the mounted configs
+labs/*
+!labs/*.yml
+!labs/lab-configs/
+!labs/lab-configs/**

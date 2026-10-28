@@ -1,0 +1,103 @@
+{
+  "task_name": "routing_linear",
+  "lab_file": "labs/routing-linear.yml",
+  "domain": "routing",
+  "difficulty": "easy",
+  "intents": [
+    "Finish the simple three-node line so pc1 and pc2 can reach each other through r1.",
+    "pc1 is already prepared on 10.0.1.2/24 and points traffic for pc2's subnet at 10.0.1.1.",
+    "pc2 is already prepared on 10.0.2.2/24 and points traffic for pc1's subnet at 10.0.2.1.",
+    "Configure r1 as the router between the two LANs, using 10.0.1.1/24 toward pc1 and 10.0.2.1/24 toward pc2.",
+    "Enable IPv4 forwarding on r1.",
+    "Leave eth0 management connectivity untouched."
+  ],
+  "startup_configs": {
+    "pc1": [
+      "ip addr add 10.0.1.2/24 dev eth1",
+      "ip route add 10.0.2.0/24 via 10.0.1.1"
+    ],
+    "r1": [],
+    "pc2": [
+      "ip addr add 10.0.2.2/24 dev eth1",
+      "ip route add 10.0.1.0/24 via 10.0.2.1"
+    ]
+  },
+  "ground_truth_configs": {
+    "r1": [
+      "ip addr add 10.0.1.1/24 dev eth1",
+      "ip addr add 10.0.2.1/24 dev eth2",
+      "sysctl -w net.ipv4.ip_forward=1"
+    ]
+  },
+  "ground_truth_reasoning": "The endpoints already have IPv4 addresses and static routes pointing at r1. r1 is missing the two gateway addresses and kernel forwarding. Assigning 10.0.1.1/24 on eth1 and 10.0.2.1/24 on eth2 makes r1 directly connected to both LANs; enabling IPv4 forwarding lets the kernel route packets between them while leaving eth0 management untouched.",
+  "baseline_invariants": [
+    {
+      "name": "PC1 management interface is still up",
+      "device": "pc1",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    },
+    {
+      "name": "R1 management interface is still up",
+      "device": "r1",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    },
+    {
+      "name": "PC2 management interface is still up",
+      "device": "pc2",
+      "command": "ip link show eth0",
+      "expected_output": "state UP"
+    },
+    {
+      "name": "PC1 management default route is preserved",
+      "device": "pc1",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    },
+    {
+      "name": "R1 management default route is preserved",
+      "device": "r1",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    },
+    {
+      "name": "PC2 management default route is preserved",
+      "device": "pc2",
+      "command": "ip route show default",
+      "expected_output": "default via 172.20.20.1 dev eth0"
+    }
+  ],
+  "testcases": [
+    {
+      "name": "PC1 can ping PC2",
+      "device": "pc1",
+      "command": "ping -c 3 -W 2 10.0.2.2",
+      "expected_output": "0% packet loss"
+    },
+    {
+      "name": "PC2 can ping PC1",
+      "device": "pc2",
+      "command": "ping -c 3 -W 2 10.0.1.2",
+      "expected_output": "0% packet loss"
+    },
+    {
+      "name": "R1 eth1 has the pc1-side gateway address",
+      "device": "r1",
+      "command": "ip addr show eth1",
+      "expected_output": "10.0.1.1/24"
+    },
+    {
+      "name": "R1 eth2 has the pc2-side gateway address",
+      "device": "r1",
+      "command": "ip addr show eth2",
+      "expected_output": "10.0.2.1/24"
+    },
+    {
+      "name": "R1 IPv4 forwarding is enabled",
+      "device": "r1",
+      "command": "cat /proc/sys/net/ipv4/ip_forward",
+      "expected_output": "1"
+    }
+  ]
+}
