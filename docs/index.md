@@ -65,6 +65,7 @@ The playground (composition manifest, scenario generator, harness) is released a
 
 ## How to cite
 
+{% raw %}
 ```bibtex
 @inproceedings{bracciale2026anigamut,
   author    = {Bracciale, Lorenzo and Loreti, Pierpaolo and Mayer, Andrea and Salsano, Stefano and Henderickx, Wim},
@@ -74,6 +75,7 @@ The playground (composition manifest, scenario generator, harness) is released a
   year      = {2026}
 }
 ```
+{% endraw %}
 
 ## Acknowledgment
 
